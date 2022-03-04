@@ -10,7 +10,13 @@
 
 // Simulated RAM
 unsigned char mem[MEM_SIZE];
-
+//
+// Get the page table for a given process
+//
+unsigned char get_page_table(int proc_num)
+{
+    return mem[proc_num + 64];
+}
 //
 // Convert a page,offset into an address
 //
