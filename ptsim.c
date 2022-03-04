@@ -41,37 +41,45 @@ void initialize_mem(void)
 
 unsigned char get_page(void)
 {
-    // TODO
-}
-//
-// Allocate pages for a new process
+    // Allocate pages for a new process
     // For each page_number in the Used Page array in zero page:
-    //     If it's unused (if it's 0):
-    //         mem[page_number] = 1 // mark used
-    //         return the page_number
-
-    // return 0xff  // indicating no free pages
+    for (int page_number = 0; PAGE_COUNT >= page_number; page_number++)
+    {
+        // If it's unused (if it's 0):
+        if (mem[page_number] == 0)
+        {
+            // mem[page_number] = 1 // mark used
+            mem[page_number] = 1;
+            // return the page_number
+            return page_number;
+        }
+    }
+    return 0xff;  // indicating no free pages
+}
 // This includes the new process page table and page_count data pages.
+//
 //
 void new_process(int proc_num, int page_count)
 {
-    // TODO
-}
-// Get the page table page
-//     page_table = AllocatePage()
+//  Get the page table page
+    int page_table = get_page();
 
 // Set this process's page table pointer in zero page
-//     mem[64 + proc_num] = page_table
-
+    mem[64 + proc_num] = page_table;
 //  Allocate data pages
-//     For i from 0 to page_count:
-//         new_page = AllocatePage()
 
-//         // Set the page table to map virt -> phys
-//         // Virtual page number is i
-//         // Physical page number is new_page
-//         pt_addr = GetAddress(page_table, i)
-//         mem[pt_addr] = new_page
+//  For i from 0 to page_count:
+    for (int i = 0; i < page_count; i++)
+    {
+        // new_page = AllocatePage()
+        int new_page = get_page();
+        // page_table = mem[i]->new_page; Set the page table to map virt -> phys
+        // Virtual page number is i
+        // Physical page number is new_page
+        int page_table_addr = get_address(page_table, i);
+        mem[page_table_addr] = new_page;
+    }
+}
 //
 // Print the free page map
 //
@@ -88,7 +96,6 @@ void print_page_free_map(void)
             putchar('\n');
     }
 }
-
 //
 // Print the address map from virtual pages to physical
 //
@@ -110,7 +117,6 @@ void print_page_table(int proc_num)
         }
     }
 }
-
 //
 // Main -- process command line
 //
