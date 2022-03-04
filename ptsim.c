@@ -24,29 +24,48 @@ int get_address(int page, int offset)
 //
 void initialize_mem(void)
 {
-    // TODO
+    // Zero every byte of physical memory in the mem array.
+    mem[MEM_SIZE] = 0;
+    // Mark zero page as "used" in the Used Page Table. (That is, set mem[0] to 1.)
+    mem[0] = 1;
 }
 
-//
 // Allocate a physical page
-//
 // Returns the number of the page, or 0xff if no more pages available
-//
+
 unsigned char get_page(void)
 {
     // TODO
 }
-
 //
 // Allocate pages for a new process
-//
+    // For each page_number in the Used Page array in zero page:
+    //     If it's unused (if it's 0):
+    //         mem[page_number] = 1 // mark used
+    //         return the page_number
+
+    // return 0xff  // indicating no free pages
 // This includes the new process page table and page_count data pages.
 //
 void new_process(int proc_num, int page_count)
 {
     // TODO
 }
+// Get the page table page
+//     page_table = AllocatePage()
 
+// Set this process's page table pointer in zero page
+//     mem[64 + proc_num] = page_table
+
+//  Allocate data pages
+//     For i from 0 to page_count:
+//         new_page = AllocatePage()
+
+//         // Set the page table to map virt -> phys
+//         // Virtual page number is i
+//         // Physical page number is new_page
+//         pt_addr = GetAddress(page_table, i)
+//         mem[pt_addr] = new_page
 //
 // Print the free page map
 //
