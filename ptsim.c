@@ -10,24 +10,22 @@
 
 // Simulated RAM
 unsigned char mem[MEM_SIZE];
-//
+
 // Get the page table for a given process
-//
 unsigned char get_page_table(int proc_num)
 {
     return mem[proc_num + 64];
 }
-//
+
 // Convert a page,offset into an address
-//
+
 int get_address(int page, int offset)
 {
     return (page << PAGE_SHIFT) | offset;
 }
 
-//
 // Initialize RAM
-//
+
 void initialize_mem(void)
 {
     // Zero every byte of physical memory in the mem array.
@@ -57,17 +55,14 @@ unsigned char get_page(void)
     return 0xff;  // indicating no free pages
 }
 // This includes the new process page table and page_count data pages.
-//
-//
+
 void new_process(int proc_num, int page_count)
 {
 //  Get the page table page
     int page_table = get_page();
-
 // Set this process's page table pointer in zero page
     mem[64 + proc_num] = page_table;
 //  Allocate data pages
-
 //  For i from 0 to page_count:
     for (int i = 0; i < page_count; i++)
     {
@@ -80,9 +75,8 @@ void new_process(int proc_num, int page_count)
         mem[page_table_addr] = new_page;
     }
 }
-//
+
 // Print the free page map
-//
 void print_page_free_map(void)
 {
     printf("--- PAGE FREE MAP ---\n");
@@ -96,9 +90,8 @@ void print_page_free_map(void)
             putchar('\n');
     }
 }
-//
+
 // Print the address map from virtual pages to physical
-//
 void print_page_table(int proc_num)
 {
     printf("--- PROCESS %d PAGE TABLE ---\n", proc_num);
@@ -117,9 +110,8 @@ void print_page_table(int proc_num)
         }
     }
 }
-//
+
 // Main -- process command line
-//
 int main(int argc, char *argv[])
 {
     assert(PAGE_COUNT * PAGE_SIZE == MEM_SIZE);
