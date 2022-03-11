@@ -84,33 +84,67 @@ void deallocate_page(int page_number)
 }
 
 // KillProcess(p):
-//     Get the page table page for this process
+void kill_process(int proc_num)
+{
+//  Get the page table page for this process
+    unsigned char page_table = get_page_table(proc_num);
 
 //     Get the page table for this process
-// page_table_page = mem[proc_num + 64];
+    int page_table_addr = get_address(page_table, 0);
 
 //     For each entry in the page table
+    for (int i = 0; i < 64; i++)
+    {
 //         If it's not 0:
-//             Deallocate that page
+        if (mem[page_table_addr + i] != 0)
+        {
+            // Deallocate that page
+            deallocate_page(mem[page_table_addr + i]);
+        }
+    }
+    // Deallocate the page table
+    deallocate_page(page_table);
+}
 
-//     Deallocate the page table page
+// GetPhysicalAddress(proc_num, virtual_address):
+int get_physical_address(int proc_num, int virtual_address)
+{
+    // Get the virtual page (see code above)
+    int virtual_page = virtual_address >> 8;
+    // Get the offset
+    int offset = virtual_address & 225;
 
-// GetPhysicalAddress(proc_num, virtual_addr):
-//     Get the virtual page (see code above)
-//     Get the offset
-//     Get the physical page from the page table
+    // Get the physical page from the page table
+    int page_table = get_page_table(proc_num);
+    int page_table_addr = get_address(page_table, virtual_page);
+    int physical_page = mem[page_table_addr];
+    // Build the physical address from the phys page and offset
+    int physical_page_address = get_address(physical_page, offset);
 
-//     Build the physical address from the phys page and offset
-
-//     Return it
+    // Return it
+    return physical_page_address;
+}
 
 // StoreValue(proc_num, virt_addr, value):
-//     phys_addr = GetPhysicalAddr(proc_num, virt_addr)
-//     mem[phys_addr] = value
+void store_value (int proc_num, int virtual_address, unsigned char value)
+{
+    //phys_addr = GetPhysicalAddr(proc_num, virt_addr)
+    int physical_address = get_physical_address(proc_num, virtual_address);
+    //mem[phys_addr] = value
+    mem[physical_address] = value;
+    printf("Store proc %d: %d => %d, value=%d\n", proc_num, virtual_address, physical_address, value);
+}
 
 // LoadValue(proc_num, virt_addr):
-//     phys_addr = GetPhysicalAddr(proc_num, virt_addr)
-//     value = mem[phys_addr]
+void load_value(int proc_num, int virtual_address)
+{
+    //phys_addr = GetPhysicalAddr(proc_num, virt_addr)
+    int physical_address = get_physical_address(proc_num, virtual_address);
+    //value = mem[phys_addr]
+    int value = mem[physical_address];
+    printf("Load proc %d: %d => %d, value=%d\n",
+    proc_num, virtual_address, physical_address, value);        
+}
 
 // Print the free page map
 void print_page_free_map(void)
@@ -159,7 +193,8 @@ int main(int argc, char *argv[])
     
     initialize_mem();
 
-    for (int i = 1; i < argc; i++) {
+// added new functions into main
+for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "np") == 0) {
             int proc_num = atoi(argv[++i]);
             int pages = atoi(argv[++i]);
@@ -171,6 +206,21 @@ int main(int argc, char *argv[])
         else if (strcmp(argv[i], "ppt") == 0) {
             int proc_num = atoi(argv[++i]);
             print_page_table(proc_num);
+        }
+        else if (strcmp(argv[i], "kp") == 0) {
+            int proc_num = atoi(argv[++i]);
+            kill_process(proc_num);
+        }
+        else if (strcmp(argv[i], "lb") == 0) {
+            int proc_num = atoi(argv[++i]);
+            int virt_addr = atoi(argv[++i]);
+            load_value(proc_num, virt_addr);
+        }
+        else if (strcmp(argv[i], "sb") == 0) {
+            int proc_num = atoi(argv[++i]);
+            int virt_addr = atoi(argv[++i]);
+            int value = atoi(argv[++i]);
+            store_value(proc_num, virt_addr, value);
         }
     }
 }
