@@ -29,7 +29,7 @@ int get_address(int page, int offset)
 void initialize_mem(void)
 {
     // Zero every byte of physical memory in the mem array.
-    mem[MEM_SIZE] = 0;
+    memset(mem, 0, MEM_SIZE);
     // Mark zero page as "used" in the Used Page Table. (That is, set mem[0] to 1.)
     mem[0] = 1;
 }
@@ -75,6 +75,42 @@ void new_process(int proc_num, int page_count)
         mem[page_table_addr] = new_page;
     }
 }
+
+// DeallocatePage(p):
+void deallocate_page(int page_number)
+{
+//  Set the value at address p in zeropage to 0
+    mem[page_number] = 0;
+}
+
+// KillProcess(p):
+//     Get the page table page for this process
+
+//     Get the page table for this process
+// page_table_page = mem[proc_num + 64];
+
+//     For each entry in the page table
+//         If it's not 0:
+//             Deallocate that page
+
+//     Deallocate the page table page
+
+// GetPhysicalAddress(proc_num, virtual_addr):
+//     Get the virtual page (see code above)
+//     Get the offset
+//     Get the physical page from the page table
+
+//     Build the physical address from the phys page and offset
+
+//     Return it
+
+// StoreValue(proc_num, virt_addr, value):
+//     phys_addr = GetPhysicalAddr(proc_num, virt_addr)
+//     mem[phys_addr] = value
+
+// LoadValue(proc_num, virt_addr):
+//     phys_addr = GetPhysicalAddr(proc_num, virt_addr)
+//     value = mem[phys_addr]
 
 // Print the free page map
 void print_page_free_map(void)
