@@ -77,25 +77,25 @@ void new_process(int proc_num, int page_count)
 }
 
 // DeallocatePage(p):
-void deallocate_page(int page_number)
+void deallocate_page(int p)
 {
 //  Set the value at address p in zeropage to 0
-    mem[page_number] = 0;
+    mem[p] = 0;
 }
 
 // KillProcess(p):
-void kill_process(int proc_num)
+void kill_process(int p)
 {
-//  Get the page table page for this process
-    unsigned char page_table = get_page_table(proc_num);
+    //Get the page table page for this process
+    unsigned char page_table = get_page_table(p);
 
-//     Get the page table for this process
+    // Get the page table for this process
     int page_table_addr = get_address(page_table, 0);
 
-//     For each entry in the page table
+    //For each entry in the page table
     for (int i = 0; i < 64; i++)
     {
-//         If it's not 0:
+    // If it's not 0:
         if (mem[page_table_addr + i] != 0)
         {
             // Deallocate that page
@@ -128,7 +128,7 @@ int get_physical_address(int proc_num, int virtual_address)
 // StoreValue(proc_num, virt_addr, value):
 void store_value (int proc_num, int virtual_address, unsigned char value)
 {
-    //phys_addr = GetPhysicalAddr(proc_num, virt_addr)
+    // phys_addr = GetPhysicalAddr(proc_num, virt_addr)
     int physical_address = get_physical_address(proc_num, virtual_address);
     //mem[phys_addr] = value
     mem[physical_address] = value;
